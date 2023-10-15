@@ -8,6 +8,11 @@ This SOFTWARE PRODUCT is provided by THE PROVIDER "as is" and "with all faults."
 pastebin.pl (including secret and unlisted ones). Pages are found using a random string of characters added to the
 URL during each GET request.
 
+## Supported Sites
+- GitHub gist
+- pastebin.com
+- pastebin.pl
+
 ## Dependencies
 - Python modules: `requests`
 - Programs: `Mullvad VPN`
