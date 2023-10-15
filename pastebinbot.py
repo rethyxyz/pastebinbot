@@ -109,6 +109,7 @@ def randchar(iterations):
 def main():
     counter = 0
     forbidden_counter = 0
+    network_failure_counter = 0
 
     motd()
 
@@ -132,6 +133,11 @@ def main():
             returncode = requests.get(f"{url}/{id}")
         except requests.exceptions.ConnectionError:
             print(f"Network failure {url}{id}")
+            if network_failure_counter >= 5:
+                switch_vpn()
+                network_failure_counter = 0
+            else:
+                network_failure_counter += 1
             continue
 
         if returncode.status_code == 200:
