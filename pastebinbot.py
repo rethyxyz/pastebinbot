@@ -5,21 +5,24 @@ import random
 import string
 import requests
 
+# todo: make this into a something like this:
+# urls = [ ["https://linksite.com/", 32], [...] ]
+# [link, bytes]
 urls = [
     "https://pastebin.pl/view/raw/",
-    "https://pastebin.com/raw/"
+    "https://pastebin.com/raw/",
+    "https://gist.githubusercontent.com/raw/"
 ]
 
 def motd():
-    print("pastebinbot\n")
+    print("pastebinbot")
 def help():
     counter = 0
-    print("Choose from one of the following URLs.")
+    print("Choose from one of the following URLs:")
     for url in urls:
         print(f"{counter}: {url}")
-        counter+=1
-    print("")
-    print("Example: pastebinbot.py 1")
+        counter += 1
+    print(f"Example: pastebinbot.py {random.randint(0, len(urls) - 1)}")
 
 def switch_vpn():
     # TODO: get location strings dynamically through mullvad command:
@@ -110,19 +113,21 @@ def main():
     motd()
 
     if len(sys.argv) < 2:
-        print("Error: No argument provided.\n")
         help()
         sys.exit(1)
 
     try:
         url = urls[int(sys.argv[1])]
     except IndexError:
-        print("Error: argv[1] doesn't exist in URL list.\n")
         help()
         sys.exit(1)
 
     while True:
-        id = randchar(8)
+        if int(sys.argv[1]) == 2:
+            id = randchar(32)
+        else:
+            id = randchar(8)
+
         try:
             returncode = requests.get(f"{url}/{id}")
         except requests.exceptions.ConnectionError:
@@ -131,9 +136,9 @@ def main():
 
         if returncode.status_code == 200:
             print(f"{counter}: Found {url}{id} {returncode.status_code}")
-            f = open(f"{id}", "w")
-            f.write(f"{url}{id}\n")
-            f.write(f"{returncode.text}")
+            f = open(f"{id}", "a")
+            f.write(f"[{url}{id}]\n")
+            f.write(f"{returncode.text}\n")
             f.close()
         elif returncode.status_code == 403:
             if forbidden_counter >= 5:
@@ -147,4 +152,8 @@ def main():
         counter += 1
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Ctrl + c pressed. Quitting...")
+        sys.exit(0)
